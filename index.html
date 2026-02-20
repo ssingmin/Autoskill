@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keyboard Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0d0f;
+      --surface: #1a1a1f;
+      --accent: #00ff9d;
+      --accent2: #00c4ff;
+      --text: #e8e8f0;
+      --muted: #555566;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    /* grid bg */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-align: center;
+    }
+
+    .label {
+      font-size: 0.7rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* input area */
+    .input-wrap {
+      position: relative;
+      width: min(500px, 90vw);
+    }
+
+    .input-wrap::before {
+      content: '> ';
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid #2a2a35;
+      border-radius: 8px;
+      padding: 16px 16px 16px 44px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      caret-color: var(--accent);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,255,157,0.08);
+    }
+
+    /* button group */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:active { transform: scale(0.96); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      letter-spacing: 1px;
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 24px rgba(0,255,157,0.4);
+    }
+
+    .btn-clear {
+      background: transparent;
+      border: 1px solid var(--muted);
+      color: var(--muted);
+    }
+
+    .btn-clear:hover {
+      border-color: #ff4466;
+      color: #ff4466;
+    }
+
+    /* ripple */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 8px; height: 8px;
+      background: rgba(0,0,0,0.3);
+      transform: scale(0);
+      animation: ripple 0.4s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to { transform: scale(20); opacity: 0; }
+    }
+
+    /* status */
+    .status {
+      font-size: 0.8rem;
+      color: var(--muted);
+      height: 20px;
+      transition: color 0.3s;
+      letter-spacing: 1px;
+    }
+
+    .status.ok { color: var(--accent); }
+    .status.clear { color: #ff4466; }
+
+    /* key visual */
+    .key-display {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .key {
+      background: var(--surface);
+      border: 1px solid #333344;
+      border-bottom: 3px solid #222230;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      transition: transform 0.1s, border-bottom-width 0.1s;
+    }
+
+    .key.pressed {
+      transform: translateY(2px);
+      border-bottom-width: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="label">keyboard input test v1.0</div>
+  <h1>⌨ 키보드 입력 테스트</h1>
+
+  <div class="key-display">
+    <span class="key" id="k-a">A</span>
+    <span class="key" id="k-b">B</span>
+    <span class="key" id="k-c">C</span>
+  </div>
+
+  <div class="input-wrap">
+    <input type="text" id="output" placeholder="여기에 입력됩니다..." readonly />
+  </div>
+
+  <div class="btn-group">
+    <button class="btn-primary" onclick="typeABC(this)">▶ abc 입력</button>
+    <button class="btn-clear" onclick="clearInput()">✕ 지우기</button>
+  </div>
+
+  <div class="status" id="status">버튼을 눌러보세요</div>
+
+  <script>
+    const input = document.getElementById('output');
+    const status = document.getElementById('status');
+
+    function typeABC(btn) {
+      const text = 'abc';
+      const keys = ['k-a', 'k-b', 'k-c'];
+      let i = 0;
+
+      // Ripple effect
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      btn.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 400);
+
+      // Type one char at a time with key animation
+      const interval = setInterval(() => {
+        if (i >= text.length) {
+          clearInterval(interval);
+          status.textContent = '✓ abc 입력 완료!';
+          status.className = 'status ok';
+          return;
+        }
+        input.value += text[i];
+
+        // key press animation
+        const keyEl = document.getElementById(keys[i]);
+        keyEl.classList.add('pressed');
+        setTimeout(() => keyEl.classList.remove('pressed'), 150);
+
+        // simulate keyboard event (for compatibility)
+        const event = new KeyboardEvent('keydown', { key: text[i], bubbles: true });
+        input.dispatchEvent(event);
+
+        i++;
+      }, 150);
+
+      status.textContent = '입력 중...';
+      status.className = 'status';
+    }
+
+    function clearInput() {
+      input.value = '';
+      status.textContent = '✕ 지워졌습니다';
+      status.className = 'status clear';
+      setTimeout(() => {
+        status.textContent = '버튼을 눌러보세요';
+        status.className = 'status';
+      }, 1500);
+    }
+  </script>
+</body>
+</html>
