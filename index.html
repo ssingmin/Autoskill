@@ -28,32 +28,34 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center;
     }
     .label { font-size: 0.7rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
-    .guide {
-      background: var(--surface); border: 1px solid #2a2a35; border-radius: 10px;
-      padding: 16px 24px; font-size: 0.8rem; color: var(--muted); line-height: 1.9;
-      max-width: 460px; width: 100%;
+    .coord-row {
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;
     }
-    .guide span { color: var(--accent); font-weight: 700; }
-    .key-display { display: flex; gap: 6px; align-items: center; }
-    .key {
-      background: var(--surface); border: 1px solid #333344; border-bottom: 3px solid #222230;
-      border-radius: 6px; padding: 6px 12px; font-size: 1rem; font-weight: 700;
-      color: var(--accent); transition: transform 0.1s, border-bottom-width 0.1s;
+    .coord-row label { font-size: 0.8rem; color: var(--muted); }
+    .coord-row input {
+      width: 90px; background: var(--surface); border: 1px solid #2a2a35;
+      border-radius: 6px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem; color: var(--accent); outline: none; text-align: center;
     }
-    .key.pressed { transform: translateY(2px); border-bottom-width: 1px; }
+    .coord-row input:focus { border-color: var(--accent); }
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
     button {
       font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700;
       padding: 14px 32px; border-radius: 8px; border: none; cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.2s; position: relative; overflow: hidden;
+      transition: transform 0.1s, box-shadow 0.2s;
       background: var(--accent); color: #000; letter-spacing: 1px;
     }
     button:active { transform: scale(0.96); }
     button:hover { box-shadow: 0 0 28px rgba(0,255,157,0.45); }
     button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-secondary {
+      background: transparent; border: 1px solid var(--accent2); color: var(--accent2);
+    }
+    .btn-secondary:hover { box-shadow: 0 0 20px rgba(0,196,255,0.3); }
     .status { font-size: 0.82rem; height: 22px; letter-spacing: 1px; color: var(--muted); transition: color 0.3s; }
-    .status.ok   { color: var(--accent); }
-    .status.error{ color: #ff4466; }
-    .status.wait { color: var(--accent2); }
+    .status.ok    { color: var(--accent); }
+    .status.error { color: #ff4466; }
+    .status.wait  { color: var(--accent2); }
     .server-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
     .dot.on  { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
@@ -61,74 +63,68 @@
   </style>
 </head>
 <body>
-  <div class="label">autoskill · keyboard test</div>
-  <h1>⌨ abc 메모장 입력</h1>
-
-  <div class="guide">
-    <span>1.</span> PC에서 <b>server.py</b> 실행 (python server.py)<br>
-    <span>2.</span> 메모장 열고 클릭해서 포커스 주기<br>
-    <span>3.</span> 버튼 클릭 → 메모장에 abc 자동 입력!
-  </div>
+  <div class="label">autoskill · mouse control</div>
+  <h1>Mouse Controller</h1>
 
   <div class="server-indicator">
     <div class="dot" id="dot"></div>
     <span id="server-status">서버 연결 확인 중...</span>
   </div>
 
-  <div class="key-display">
-    <span class="key" id="k-a">A</span>
-    <span class="key" id="k-b">B</span>
-    <span class="key" id="k-c">C</span>
+  <div class="coord-row">
+    <label>X</label>
+    <input type="number" id="coord-x" value="960" />
+    <label>Y</label>
+    <input type="number" id="coord-y" value="540" />
   </div>
 
-  <button id="btn" onclick="typeABC()">▶ 메모장에 abc 입력</button>
+  <div class="btn-group">
+    <button id="btn-click" onclick="doClick()">Click (좌클릭)</button>
+    <button class="btn-secondary" onclick="resetCenter()">중앙으로</button>
+  </div>
+
   <div class="status" id="status">서버가 실행 중이어야 합니다</div>
 
   <script>
     const SERVER = 'http://localhost:5000';
 
     async function checkServer() {
-      const dot = document.getElementById('dot');
-      const sv  = document.getElementById('server-status');
-      const btn = document.getElementById('btn');
       try {
         await fetch(`${SERVER}/ping`, { signal: AbortSignal.timeout(1500) });
-        dot.className = 'dot on';
-        sv.textContent = '로컬 서버 연결됨 ✓';
-        btn.disabled = false;
+        document.getElementById('dot').className = 'dot on';
+        document.getElementById('server-status').textContent = '로컬 서버 연결됨';
+        document.getElementById('btn-click').disabled = false;
       } catch {
-        dot.className = 'dot off';
-        sv.textContent = '로컬 서버 꺼짐 — python server.py 실행 필요';
-        btn.disabled = true;
+        document.getElementById('dot').className = 'dot off';
+        document.getElementById('server-status').textContent = '로컬 서버 꺼짐 — python server.py 실행 필요';
+        document.getElementById('btn-click').disabled = true;
       }
     }
 
     checkServer();
     setInterval(checkServer, 3000);
 
-    async function typeABC() {
-      const btn    = document.getElementById('btn');
+    async function doClick() {
+      const x = document.getElementById('coord-x').value;
+      const y = document.getElementById('coord-y').value;
+      const btn = document.getElementById('btn-click');
       const status = document.getElementById('status');
-      const ids    = ['k-a','k-b','k-c'];
 
       btn.disabled = true;
-      status.textContent = '메모장으로 전환 후 입력 중...';
+      status.textContent = `(${x}, ${y}) 로 이동 후 클릭 중...`;
       status.className = 'status wait';
 
-      ids.forEach((id, i) => setTimeout(() => {
-        const el = document.getElementById(id);
-        el.classList.add('pressed');
-        setTimeout(() => el.classList.remove('pressed'), 150);
-      }, i * 150));
-
       try {
-        const res = await fetch(`${SERVER}/type/abc`);
+        const res = await fetch(`${SERVER}/click?x=${x}&y=${y}`);
+        const data = await res.json();
         if (res.ok) {
-          status.textContent = '✓ abc 입력 완료!';
+          status.textContent = `Clicked at (${x}, ${y})`;
           status.className = 'status ok';
-        } else throw new Error();
-      } catch {
-        status.textContent = '❌ 실패 — 서버가 실행 중인지 확인하세요';
+        } else {
+          throw new Error(data.message);
+        }
+      } catch(e) {
+        status.textContent = '실패 — ' + (e.message || '서버 확인');
         status.className = 'status error';
       }
 
@@ -137,7 +133,12 @@
         status.textContent = '';
         status.className = 'status';
         checkServer();
-      }, 2500);
+      }, 2000);
+    }
+
+    function resetCenter() {
+      document.getElementById('coord-x').value = 960;
+      document.getElementById('coord-y').value = 540;
     }
   </script>
 </body>
