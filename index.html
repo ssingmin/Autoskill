@@ -3,202 +3,77 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keyboard Test</title>
+  <title>Autoskill</title>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #0d0d0f;
-      --surface: #1a1a1f;
-      --accent: #00ff9d;
-      --accent2: #00c4ff;
-      --text: #e8e8f0;
-      --muted: #555566;
+      --bg: #0d0d0f; --surface: #1a1a1f; --accent: #00ff9d;
+      --accent2: #00c4ff; --text: #e8e8f0; --muted: #555566;
     }
-
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg); color: var(--text);
       font-family: 'JetBrains Mono', monospace;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-      padding: 24px;
-      overflow: hidden;
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 36px; padding: 24px;
     }
-
-    /* grid bg */
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none;
     }
-
     h1 {
-      font-family: 'Syne', sans-serif;
-      font-size: clamp(1.6rem, 4vw, 2.8rem);
-      font-weight: 800;
-      letter-spacing: -1px;
+      font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 800;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-align: center;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center;
     }
-
-    .label {
-      font-size: 0.7rem;
-      letter-spacing: 3px;
-      color: var(--muted);
-      text-transform: uppercase;
-      text-align: center;
+    .label { font-size: 0.7rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
+    .guide {
+      background: var(--surface); border: 1px solid #2a2a35; border-radius: 10px;
+      padding: 16px 24px; font-size: 0.8rem; color: var(--muted); line-height: 1.9;
+      max-width: 460px; width: 100%;
     }
-
-    /* input area */
-    .input-wrap {
-      position: relative;
-      width: min(500px, 90vw);
-    }
-
-    .input-wrap::before {
-      content: '> ';
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--accent);
-      font-size: 1rem;
-      pointer-events: none;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid #2a2a35;
-      border-radius: 8px;
-      padding: 16px 16px 16px 44px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.1rem;
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.2s;
-      caret-color: var(--accent);
-    }
-
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(0,255,157,0.08);
-    }
-
-    /* button group */
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    button {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.95rem;
-      font-weight: 700;
-      padding: 14px 28px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.2s, background 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    button:active { transform: scale(0.96); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-      letter-spacing: 1px;
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 0 24px rgba(0,255,157,0.4);
-    }
-
-    .btn-clear {
-      background: transparent;
-      border: 1px solid var(--muted);
-      color: var(--muted);
-    }
-
-    .btn-clear:hover {
-      border-color: #ff4466;
-      color: #ff4466;
-    }
-
-    /* ripple */
-    .ripple {
-      position: absolute;
-      border-radius: 50%;
-      width: 8px; height: 8px;
-      background: rgba(0,0,0,0.3);
-      transform: scale(0);
-      animation: ripple 0.4s ease-out;
-      pointer-events: none;
-    }
-
-    @keyframes ripple {
-      to { transform: scale(20); opacity: 0; }
-    }
-
-    /* status */
-    .status {
-      font-size: 0.8rem;
-      color: var(--muted);
-      height: 20px;
-      transition: color 0.3s;
-      letter-spacing: 1px;
-    }
-
-    .status.ok { color: var(--accent); }
-    .status.clear { color: #ff4466; }
-
-    /* key visual */
-    .key-display {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
+    .guide span { color: var(--accent); font-weight: 700; }
+    .key-display { display: flex; gap: 6px; align-items: center; }
     .key {
-      background: var(--surface);
-      border: 1px solid #333344;
-      border-bottom: 3px solid #222230;
-      border-radius: 6px;
-      padding: 6px 12px;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--accent);
-      transition: transform 0.1s, border-bottom-width 0.1s;
+      background: var(--surface); border: 1px solid #333344; border-bottom: 3px solid #222230;
+      border-radius: 6px; padding: 6px 12px; font-size: 1rem; font-weight: 700;
+      color: var(--accent); transition: transform 0.1s, border-bottom-width 0.1s;
     }
-
-    .key.pressed {
-      transform: translateY(2px);
-      border-bottom-width: 1px;
+    .key.pressed { transform: translateY(2px); border-bottom-width: 1px; }
+    button {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700;
+      padding: 14px 32px; border-radius: 8px; border: none; cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.2s; position: relative; overflow: hidden;
+      background: var(--accent); color: #000; letter-spacing: 1px;
     }
+    button:active { transform: scale(0.96); }
+    button:hover { box-shadow: 0 0 28px rgba(0,255,157,0.45); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    .status { font-size: 0.82rem; height: 22px; letter-spacing: 1px; color: var(--muted); transition: color 0.3s; }
+    .status.ok   { color: var(--accent); }
+    .status.error{ color: #ff4466; }
+    .status.wait { color: var(--accent2); }
+    .server-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
+    .dot.on  { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .dot.off { background: #ff4466; }
   </style>
 </head>
 <body>
+  <div class="label">autoskill · keyboard test</div>
+  <h1>⌨ abc 메모장 입력</h1>
 
-  <div class="label">keyboard input test v1.0</div>
-  <h1>⌨ 키보드 입력 테스트</h1>
+  <div class="guide">
+    <span>1.</span> PC에서 <b>server.py</b> 실행 (python server.py)<br>
+    <span>2.</span> 메모장 열고 클릭해서 포커스 주기<br>
+    <span>3.</span> 버튼 클릭 → 메모장에 abc 자동 입력!
+  </div>
+
+  <div class="server-indicator">
+    <div class="dot" id="dot"></div>
+    <span id="server-status">서버 연결 확인 중...</span>
+  </div>
 
   <div class="key-display">
     <span class="key" id="k-a">A</span>
@@ -206,66 +81,63 @@
     <span class="key" id="k-c">C</span>
   </div>
 
-  <div class="input-wrap">
-    <input type="text" id="output" placeholder="여기에 입력됩니다..." readonly />
-  </div>
-
-  <div class="btn-group">
-    <button class="btn-primary" onclick="typeABC(this)">▶ abc 입력</button>
-    <button class="btn-clear" onclick="clearInput()">✕ 지우기</button>
-  </div>
-
-  <div class="status" id="status">버튼을 눌러보세요</div>
+  <button id="btn" onclick="typeABC()">▶ 메모장에 abc 입력</button>
+  <div class="status" id="status">서버가 실행 중이어야 합니다</div>
 
   <script>
-    const input = document.getElementById('output');
-    const status = document.getElementById('status');
+    const SERVER = 'http://localhost:5000';
 
-    function typeABC(btn) {
-      const text = 'abc';
-      const keys = ['k-a', 'k-b', 'k-c'];
-      let i = 0;
-
-      // Ripple effect
-      const ripple = document.createElement('span');
-      ripple.className = 'ripple';
-      btn.appendChild(ripple);
-      setTimeout(() => ripple.remove(), 400);
-
-      // Type one char at a time with key animation
-      const interval = setInterval(() => {
-        if (i >= text.length) {
-          clearInterval(interval);
-          status.textContent = '✓ abc 입력 완료!';
-          status.className = 'status ok';
-          return;
-        }
-        input.value += text[i];
-
-        // key press animation
-        const keyEl = document.getElementById(keys[i]);
-        keyEl.classList.add('pressed');
-        setTimeout(() => keyEl.classList.remove('pressed'), 150);
-
-        // simulate keyboard event (for compatibility)
-        const event = new KeyboardEvent('keydown', { key: text[i], bubbles: true });
-        input.dispatchEvent(event);
-
-        i++;
-      }, 150);
-
-      status.textContent = '입력 중...';
-      status.className = 'status';
+    async function checkServer() {
+      const dot = document.getElementById('dot');
+      const sv  = document.getElementById('server-status');
+      const btn = document.getElementById('btn');
+      try {
+        await fetch(`${SERVER}/ping`, { signal: AbortSignal.timeout(1500) });
+        dot.className = 'dot on';
+        sv.textContent = '로컬 서버 연결됨 ✓';
+        btn.disabled = false;
+      } catch {
+        dot.className = 'dot off';
+        sv.textContent = '로컬 서버 꺼짐 — python server.py 실행 필요';
+        btn.disabled = true;
+      }
     }
 
-    function clearInput() {
-      input.value = '';
-      status.textContent = '✕ 지워졌습니다';
-      status.className = 'status clear';
+    checkServer();
+    setInterval(checkServer, 3000);
+
+    async function typeABC() {
+      const btn    = document.getElementById('btn');
+      const status = document.getElementById('status');
+      const ids    = ['k-a','k-b','k-c'];
+
+      btn.disabled = true;
+      status.textContent = '메모장으로 전환 후 입력 중...';
+      status.className = 'status wait';
+
+      ids.forEach((id, i) => setTimeout(() => {
+        const el = document.getElementById(id);
+        el.classList.add('pressed');
+        setTimeout(() => el.classList.remove('pressed'), 150);
+      }, i * 150));
+
+      try {
+        const res = await fetch(`${SERVER}/type/abc`);
+        if (res.ok) {
+          status.textContent = '✓ abc 입력 완료!';
+          status.className = 'status ok';
+        } else throw new Error();
+      } catch {
+        status.textContent = '❌ 실패 — 서버가 실행 중인지 확인하세요';
+        status.className = 'status error';
+      }
+
       setTimeout(() => {
-        status.textContent = '버튼을 눌러보세요';
+        btn.disabled = false;
+        status.textContent = '';
         status.className = 'status';
-      }, 1500);
+        checkServer();
+      }, 2500);
     }
   </script>
 </body>
