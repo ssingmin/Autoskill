@@ -7,58 +7,27 @@
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0d0d0f; --surface: #1a1a1f; --accent: #00ff9d;
-      --accent2: #00c4ff; --text: #e8e8f0; --muted: #555566;
-    }
-    body {
-      background: var(--bg); color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-      min-height: 100vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 36px; padding: 24px;
-    }
-    body::before {
-      content: ''; position: fixed; inset: 0;
-      background-image: linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px);
-      background-size: 40px 40px; pointer-events: none;
-    }
-    h1 {
-      font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center;
-    }
+    :root { --bg: #0d0d0f; --surface: #1a1a1f; --accent: #00ff9d; --accent2: #00c4ff; --text: #e8e8f0; --muted: #555566; }
+    body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 36px; padding: 24px; }
+    body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(0,255,157,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,157,0.04) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; }
+    h1 { font-family: 'Syne', sans-serif; font-size: clamp(1.6rem, 4vw, 2.8rem); font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-align: center; }
     .label { font-size: 0.7rem; letter-spacing: 3px; color: var(--muted); text-transform: uppercase; }
-    .coord-row {
-      display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center;
-    }
+    .coord-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
     .coord-row label { font-size: 0.8rem; color: var(--muted); }
-    .coord-row input {
-      width: 90px; background: var(--surface); border: 1px solid #2a2a35;
-      border-radius: 6px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem; color: var(--accent); outline: none; text-align: center;
-    }
+    .coord-row input { width: 90px; background: var(--surface); border: 1px solid #2a2a35; border-radius: 6px; padding: 8px 12px; font-family: 'JetBrains Mono', monospace; font-size: 1rem; color: var(--accent); outline: none; text-align: center; }
     .coord-row input:focus { border-color: var(--accent); }
     .btn-group { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-    button {
-      font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700;
-      padding: 14px 32px; border-radius: 8px; border: none; cursor: pointer;
-      transition: transform 0.1s, box-shadow 0.2s;
-      background: var(--accent); color: #000; letter-spacing: 1px;
-    }
+    button { font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; font-weight: 700; padding: 14px 32px; border-radius: 8px; border: none; cursor: pointer; transition: transform 0.1s, box-shadow 0.2s; background: var(--accent); color: #000; letter-spacing: 1px; }
     button:active { transform: scale(0.96); }
     button:hover { box-shadow: 0 0 28px rgba(0,255,157,0.45); }
     button:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-secondary {
-      background: transparent; border: 1px solid var(--accent2); color: var(--accent2);
-    }
+    .btn-secondary { background: transparent; border: 1px solid var(--accent2); color: var(--accent2); }
     .btn-secondary:hover { box-shadow: 0 0 20px rgba(0,196,255,0.3); }
     .status { font-size: 0.82rem; height: 22px; letter-spacing: 1px; color: var(--muted); transition: color 0.3s; }
-    .status.ok    { color: var(--accent); }
-    .status.error { color: #ff4466; }
-    .status.wait  { color: var(--accent2); }
+    .status.ok { color: var(--accent); } .status.error { color: #ff4466; } .status.wait { color: var(--accent2); }
     .server-indicator { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--muted); }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
-    .dot.on  { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .dot.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
     .dot.off { background: #ff4466; }
   </style>
 </head>
@@ -79,7 +48,7 @@
   </div>
 
   <div class="btn-group">
-    <button id="btn-click" onclick="doClick()">Click (좌클릭)</button>
+    <button id="btn-move" onclick="doMove()">마우스 이동</button>
     <button class="btn-secondary" onclick="resetCenter()">중앙으로</button>
   </div>
 
@@ -93,32 +62,32 @@
         await fetch(`${SERVER}/ping`, { signal: AbortSignal.timeout(1500) });
         document.getElementById('dot').className = 'dot on';
         document.getElementById('server-status').textContent = '로컬 서버 연결됨';
-        document.getElementById('btn-click').disabled = false;
+        document.getElementById('btn-move').disabled = false;
       } catch {
         document.getElementById('dot').className = 'dot off';
         document.getElementById('server-status').textContent = '로컬 서버 꺼짐 — python server.py 실행 필요';
-        document.getElementById('btn-click').disabled = true;
+        document.getElementById('btn-move').disabled = true;
       }
     }
 
     checkServer();
     setInterval(checkServer, 3000);
 
-    async function doClick() {
+    async function doMove() {
       const x = document.getElementById('coord-x').value;
       const y = document.getElementById('coord-y').value;
-      const btn = document.getElementById('btn-click');
+      const btn = document.getElementById('btn-move');
       const status = document.getElementById('status');
 
       btn.disabled = true;
-      status.textContent = `(${x}, ${y}) 로 이동 후 클릭 중...`;
+      status.textContent = `(${x}, ${y}) 로 이동 중...`;
       status.className = 'status wait';
 
       try {
-        const res = await fetch(`${SERVER}/click?x=${x}&y=${y}`);
+        const res = await fetch(`${SERVER}/move?x=${x}&y=${y}`);
         const data = await res.json();
         if (res.ok) {
-          status.textContent = `Clicked at (${x}, ${y})`;
+          status.textContent = `Moved to (${x}, ${y})`;
           status.className = 'status ok';
         } else {
           throw new Error(data.message);
